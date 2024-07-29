@@ -13,7 +13,7 @@ plugins {
 }
 
 // https://github.com/tabular-io/iceberg-kafka-connect/releases
-version = '0.6.19-20240729-1'
+version = '0.6.19-20240729-2'
 
 subprojects {
   apply plugin: "java"
