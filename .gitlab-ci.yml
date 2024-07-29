@@ -1,0 +1,29 @@
+stages:
+  - build
+  - test
+
+variables:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
+gradle-build:
+  stage: build
+  image: wcr.baemin.in/dockerhub/gradle:8.1.1-jdk11
+  script: # https://github.com/tabular-io/iceberg-kafka-connect?tab=readme-ov-file#installation
+    # - gradle wrapper
+    # - ./gradlew build --no-daemon
+    - ./gradlew -xtest clean build publish --no-daemon
+
+  rules:
+    # - if: $CI_COMMIT_BRANCH == "ci/build_pipeline"
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - kafka-connect/**/*
+        - kafka-connect-events/**/*
+        - kafka-connect-runtime/**/*
+        - kafka-connect-transforms/**/*
+        - gradle/**/*
+        - gradlew
+        - settings.gradle
+        - build.gradle
+        - .gitlab-ci.yml
+      when: always

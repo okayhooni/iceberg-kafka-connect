@@ -130,9 +130,19 @@ publishing {
   publications {
     main(MavenPublication) {
       artifact distZip
+      artifactId = 'iceberg-kafka-connect-runtime'
+
+      pom {
+        version = rootProject.version
+      }
     }
     hive(MavenPublication) {
       artifact hiveDistZip
+      artifactId = 'iceberg-kafka-connect-runtime-hive'
+
+      pom {
+        version = rootProject.version
+      }
     }
   }
 }
