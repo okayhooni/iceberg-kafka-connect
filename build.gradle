@@ -12,6 +12,9 @@ plugins {
   alias(libs.plugins.nebula.release)
 }
 
+// https://github.com/tabular-io/iceberg-kafka-connect/releases
+version = '0.6.19-20240729-1'
+
 subprojects {
   apply plugin: "java"
   apply plugin: "com.diffplug.spotless"
@@ -21,6 +24,9 @@ subprojects {
   group "io.tabular.connect"
 
   repositories {
+    maven {
+      url = "https://nexus.baemin.in/repository/maven"
+    }
     mavenCentral()
     maven {
       url = "https://tabular-repository-public.s3.amazonaws.com/releases"
@@ -66,10 +72,13 @@ subprojects {
   publishing {
     repositories {
       maven {
-        authentication {
-          awsIm(AwsImAuthentication)
+        credentials {
+          username = 'dataplatform'
+          password = 'dkanehahfmsmsdkagh'
         }
-        url = "s3://tabular-repository-public/releases"
+        // url 'https://nexus.baemin.in/repository/maven-snapshot'
+        url 'https://nexus.baemin.in/repository/maven-release'
+        // https://git.baemin.in/dataplatform/kafka-connect-transform-common/-/merge_requests/1
       }
     }
   }
