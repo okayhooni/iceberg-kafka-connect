@@ -1,5 +1,8 @@
 buildscript {
   repositories {
+    maven {
+      url = "https://nexus.baemin.in/repository/maven"
+    }
     mavenCentral()
   }
   dependencies {
