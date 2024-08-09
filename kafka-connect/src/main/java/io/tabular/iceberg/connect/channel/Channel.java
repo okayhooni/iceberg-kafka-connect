@@ -42,6 +42,8 @@ import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
+// TODO - i guess it is not necessary here
+//  import org.apache.kafka.connect.sink.SinkTaskContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,9 +52,11 @@ public abstract class Channel {
   private static final Logger LOG = LoggerFactory.getLogger(Channel.class);
 
   private final String controlTopic;
-  private final String groupId;
+  private final String connectGroupId;
   private final Producer<String, byte[]> producer;
   private final Consumer<String, byte[]> consumer;
+  // TODO - i guess it is not necessary here
+  //  private final SinkTaskContext context;
   private final Admin admin;
   private final Map<Integer, Long> controlTopicOffsets = Maps.newHashMap();
   private final String producerId;
@@ -64,8 +68,11 @@ public abstract class Channel {
       String consumerGroupId,
       IcebergSinkConfig config,
       KafkaClientFactory clientFactory) {
+    // TODO - i guess it is not necessary here
+    //  SinkTaskContext context) {
     this.controlTopic = config.controlTopic();
-    this.groupId = config.controlGroupId();
+    this.connectGroupId = config.connectGroupId();
+    // this.context = context;
 
     String transactionalId = name + config.transactionalSuffix();
     Pair<UUID, Producer<String, byte[]>> pair = clientFactory.createProducer(transactionalId);
@@ -105,6 +112,9 @@ public abstract class Channel {
         recordList.forEach(producer::send);
         producer.flush();
         if (!sourceOffsets.isEmpty()) {
+          // TODO: inject `KafkaUtils.getConsumerGroupMetadata(context, connectGroupId)` on `CommitterImpl`
+          //  producer.sendOffsetsToTransaction(offsetsToCommit, KafkaUtils.getConsumerGroupMetadata(context, connectGroupId));
+          //  https://github.com/tabular-io/iceberg-kafka-connect/pull/240/commits/2457d63eea58e3ceebbd2abd1930669394b7a7e0#r1571282089
           producer.sendOffsetsToTransaction(offsetsToCommit, consumerGroupMetadata);
         }
         producer.commitTransaction();
@@ -130,7 +140,7 @@ public abstract class Channel {
 
             Event event = eventDecoder.decode(record.value());
             if (event != null) {
-              if (event.groupId().equals(groupId)) {
+              if (event.groupId().equals(connectGroupId)) {
                 LOG.debug("Received event of type: {}", event.type().name());
                 if (receiveFn.apply(new Envelope(event, record.partition(), record.offset()))) {
                   LOG.debug("Handled event of type: {}", event.type().name());
