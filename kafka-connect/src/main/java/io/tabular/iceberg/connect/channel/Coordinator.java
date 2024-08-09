@@ -78,7 +78,7 @@ public class Coordinator extends Channel implements AutoCloseable {
       Collection<MemberDescription> members,
       KafkaClientFactory clientFactory) {
     // pass consumer group ID to which we commit low watermark offsets
-    super("coordinator", config.connectGroupId() + "-coord", config, clientFactory);
+    super("coordinator", config.controlCoordinatorGroupId(), config, clientFactory);
 
     this.catalog = catalog;
     this.config = config;
