@@ -80,6 +80,8 @@ public class IcebergSinkTask extends SinkTask {
   @Override
   public Map<TopicPartition, OffsetAndMetadata> preCommit(
       Map<TopicPartition, OffsetAndMetadata> currentOffsets) {
+    // TODO: No usages found in All Places
+    //  offset commit is handled by the worker
     return ImmutableMap.of();
   }
 
